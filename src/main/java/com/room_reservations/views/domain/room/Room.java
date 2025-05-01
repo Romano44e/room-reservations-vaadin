@@ -90,4 +90,8 @@ public class Room {
         this.price = price;
     }
 
+    public Set<Reservation> getReservations() {
+        return reservations;
+    }
+
 }

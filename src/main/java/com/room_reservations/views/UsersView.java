@@ -2,10 +2,13 @@ package com.room_reservations.views;
 
 import com.room_reservations.views.domain.user.User;
 import com.room_reservations.views.domain.user.UserForm;
+import com.room_reservations.views.domain.user.UserRestClient;
 import com.room_reservations.views.domain.user.UserService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -15,18 +18,23 @@ import com.vaadin.flow.router.Route;
 @Route(value = "users", layout = MainLayout.class)
 public class UsersView extends VerticalLayout {
 
-    private UserService userService = UserService.getInstance();
-    private Grid<User> grid = new Grid<>(User.class);
-    private TextField nameFilter = new TextField("Name");
-    private TextField emailFilter = new TextField("Email");
-    private UserForm form = new UserForm(this);
-    private Button addNewUser = new Button("Add new user");
+    private final UserRestClient userClient = new UserRestClient();
+    private final Grid<User> grid = new Grid<>(User.class);
+    private final TextField nameFilter = new TextField("Name");
+    private final TextField emailFilter = new TextField("Email");
+    private final UserForm form = new UserForm(this);
+    private final Button addNewUser = new Button("Add new user");
+    private final Button toggleFilters = new Button("Show/Hide Filters");
+    private final VerticalLayout filterSection = new VerticalLayout();
 
     public UsersView() {
         add(new H2("Users Page"));
 
         nameFilter.setClearButtonVisible(true);
         emailFilter.setClearButtonVisible(true);
+
+        nameFilter.setWidth("150px");
+        emailFilter.setWidth("150px");
 
         nameFilter.setValueChangeMode(ValueChangeMode.EAGER);
         emailFilter.setValueChangeMode(ValueChangeMode.EAGER);
@@ -41,14 +49,25 @@ public class UsersView extends VerticalLayout {
             form.setUser(new User());
         });
 
-        HorizontalLayout filters = new HorizontalLayout(nameFilter, emailFilter);
-        HorizontalLayout toolbar = new HorizontalLayout(filters, addNewUser);
-        HorizontalLayout mainContent = new HorizontalLayout(grid, form);
+        HorizontalLayout topFilters = new HorizontalLayout(nameFilter, emailFilter);
+        topFilters.setAlignItems(FlexComponent.Alignment.BASELINE);
+        topFilters.setSpacing(true);
 
+        filterSection.add(topFilters);
+        filterSection.setVisible(false);
+
+        toggleFilters.addClickListener(e -> filterSection.setVisible(!filterSection.isVisible()));
+
+        HorizontalLayout toolbar = new HorizontalLayout(toggleFilters, addNewUser);
+        toolbar.setWidthFull();
+        toolbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        toolbar.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        HorizontalLayout mainContent = new HorizontalLayout(grid, form);
         mainContent.setSizeFull();
         grid.setSizeFull();
 
-        add(toolbar, mainContent);
+        add(new VerticalLayout(toolbar, filterSection), mainContent);
         form.setUser(null);
         setSizeFull();
         refresh();
@@ -57,13 +76,40 @@ public class UsersView extends VerticalLayout {
     }
 
     public void refresh() {
-        grid.setItems(userService.getUsers());
+        grid.setItems(userClient.fetchAllUsers());
     }
 
     private void update() {
-        grid.setItems(userService.findByNameOrEmail(
-                nameFilter.getValue(),
-                emailFilter.getValue()
-        ));
+        String name = nameFilter.getValue();
+        String email = emailFilter.getValue();
+
+        if (!name.isEmpty()) {
+            grid.setItems(userClient.fetchUsersByName(name));
+        } else if (!email.isEmpty()) {
+            grid.setItems(userClient.fetchUsersByEmail(email));
+        } else {
+            refresh();
+        }
+    }
+
+    public void createUser(User user) {
+        userClient.createUser(user);
+        Notification.show("User created.");
+        refresh();
+    }
+
+    public void updateUser(User user) {
+        userClient.updateUser(user);
+        Notification.show("User updated.");
+        refresh();
+    }
+
+    public void deleteUser(User user) {
+        if (user.getName() != null && !user.getName().isEmpty()) {
+            userClient.deleteUserByName(user.getName());
+            Notification.show("User deleted by name.");
+            refresh();
+        }
     }
 }
+

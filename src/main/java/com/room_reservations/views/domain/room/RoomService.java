@@ -1,8 +1,6 @@
 package com.room_reservations.views.domain.room;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,8 +36,7 @@ public class RoomService {
         return rooms;
     }
 
-    public Set<Room> findAvailableRooms(String name, String capacity, String location, String price,
-                                        LocalDate date, LocalTime time) {
+    public Set<Room> findAvailableRooms(String name, String capacity, String location, String price) {
         return rooms.stream().filter(room -> {
             boolean matches = true;
             if (name != null && !name.isEmpty()) {
@@ -53,9 +50,6 @@ public class RoomService {
             }
             if (price != null && !price.isEmpty()) {
                 matches &= room.getPrice().toString().contains(price);
-            }
-            if (date != null && time != null) {
-                matches &= room.isAvailable(date, time);
             }
             return matches;
         }).collect(Collectors.toSet());

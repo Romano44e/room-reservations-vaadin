@@ -20,8 +20,8 @@ public class ReservationForm extends FormLayout {
     private TextField code = new TextField("Reservation Code");
 
     private Button save = new Button("Save");
-    private Button update = new Button("Update by Code");
-    private Button delete = new Button("Delete by Code");
+    private Button update = new Button("Update");
+    private Button delete = new Button("Delete");
 
     private ReservationsView reservationsView;
     private Reservation reservation;
@@ -31,9 +31,48 @@ public class ReservationForm extends FormLayout {
 
         add(userName, roomName, startTime, endTime, status, isPaid, value, code, save, update, delete);
 
+        userName.setEnabled(false);
+        roomName.setEnabled(false);
+        startTime.setEnabled(false);
+        endTime.setEnabled(false);
+        status.setEnabled(false);
+        isPaid.setEnabled(false);
+        value.setEnabled(false);
+        code.setEnabled(false);
+
+        save.setEnabled(false);
+        update.setEnabled(false);
+        delete.setEnabled(false);
+
         save.addClickListener(e -> save());
         update.addClickListener(e -> update());
         delete.addClickListener(e -> delete());
+    }
+
+    public void enableEditing() {
+        userName.setEnabled(true);
+        roomName.setEnabled(true);
+        startTime.setEnabled(true);
+        endTime.setEnabled(true);
+        status.setEnabled(true);
+        isPaid.setEnabled(true);
+        value.setEnabled(true);
+        save.setEnabled(true);
+        update.setEnabled(true);
+        delete.setEnabled(true);
+    }
+
+    public void disableEditing() {
+        userName.setEnabled(false);
+        roomName.setEnabled(false);
+        startTime.setEnabled(false);
+        endTime.setEnabled(false);
+        status.setEnabled(false);
+        isPaid.setEnabled(false);
+        value.setEnabled(false);
+        save.setEnabled(false);
+        update.setEnabled(false);
+        delete.setEnabled(false);
     }
 
     public void setReservation(Reservation reservation) {
@@ -48,6 +87,14 @@ public class ReservationForm extends FormLayout {
             value.setValue(reservation.getValue() != null ? reservation.getValue() : "");
             code.setValue(reservation.getCode() != null ? reservation.getCode() : "");
         }
+    }
+
+    public TextField getCodeField() {
+        return code;
+    }
+
+    public void setCodeValue(String value) {
+        this.code.setValue(value);
     }
 
     private void save() {
