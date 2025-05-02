@@ -5,13 +5,15 @@ public class User {
     private String name;
     private String email;
     private int points;
+    private String password;
 
     public User() {}
 
-    public User(String name, String email, int points) {
+    public User(String name, String email, int points, String password) {
         this.name = name;
         this.email = email;
         this.points = points;
+        this.password = password;
     }
 
     public String getName() {
@@ -36,5 +38,17 @@ public class User {
 
     public void setPoints(int points) {
         this.points = points;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public boolean passwordMatches(String enteredPassword) {
+        return this.password != null && this.password.equals(enteredPassword);
     }
 }

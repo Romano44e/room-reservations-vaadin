@@ -3,7 +3,6 @@ package com.room_reservations.views;
 import com.room_reservations.views.domain.user.User;
 import com.room_reservations.views.domain.user.UserForm;
 import com.room_reservations.views.domain.user.UserRestClient;
-import com.room_reservations.views.domain.user.UserService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -98,18 +97,16 @@ public class UsersView extends VerticalLayout {
         refresh();
     }
 
-    public void updateUser(User user) {
-        userClient.updateUser(user);
-        Notification.show("User updated.");
+    public void updateUserByPassword(User user) {
+        userClient.updateUserByPassword(user);
+        Notification.show("User updated with password.");
         refresh();
     }
 
-    public void deleteUser(User user) {
-        if (user.getName() != null && !user.getName().isEmpty()) {
-            userClient.deleteUserByName(user.getName());
-            Notification.show("User deleted by name.");
-            refresh();
-        }
+    public void deleteUserByPassword(String password) {
+        userClient.deleteUserByPassword(password);
+        Notification.show("User deleted with password.");
+        refresh();
     }
 }
 
