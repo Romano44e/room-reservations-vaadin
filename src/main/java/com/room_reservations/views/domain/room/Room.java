@@ -14,18 +14,20 @@ public class Room {
 
     private String name;
     private int capacity;
-    private RoomType location;
+    private String location;
     private BigDecimal price;
+    private String cipher;
     private Set<Reservation> reservations = new HashSet<>();
 
     public Room() {
     }
 
-    public Room(String name, int capacity, RoomType location, BigDecimal price) {
+    public Room(String name, int capacity, String location, BigDecimal price, String cipher) {
         this.name = name;
         this.capacity = capacity;
         this.location = location;
         this.price = price;
+        this.cipher = cipher;
     }
 
     public String getName() {
@@ -36,7 +38,7 @@ public class Room {
         return capacity;
     }
 
-    public RoomType getLocation() {
+    public String getLocation() {
         return location;
     }
 
@@ -82,7 +84,7 @@ public class Room {
         this.capacity = capacity;
     }
 
-    public void setLocation(RoomType location) {
+    public void setLocation(String location) {
         this.location = location;
     }
 
@@ -94,4 +96,10 @@ public class Room {
         return reservations;
     }
 
+    public String getCipher() {
+        return cipher;
+    }
+    public void setCipher(String cipher) {
+        this.cipher = cipher;
+    }
 }

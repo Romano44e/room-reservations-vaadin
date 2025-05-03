@@ -2,62 +2,84 @@ package com.room_reservations.views.domain.room;
 
 import com.room_reservations.views.RoomsView;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.Binder;
+
+import java.math.BigDecimal;
 
 public class RoomForm extends FormLayout {
 
-    private RoomsView roomsView;
-    private RoomService service = RoomService.getInstance();
+    private final TextField name = new TextField("Name");
+    private final TextField location = new TextField("Location");
+    private final TextField capacity = new TextField("Capacity");
+    private final TextField price = new TextField("Price");
+    private final TextField cipher = new TextField("Cipher (for update/delete)");
 
-    private TextField name = new TextField("Name");
-    private TextField capacity = new TextField("Capacity");
-    private ComboBox<RoomType> location = new ComboBox<>("Location");
-    private TextField price = new TextField("Price");
+    private final Button create = new Button("Create");
+    private final Button update = new Button("Update");
+    private final Button delete = new Button("Delete");
 
-
-    private Button save = new Button("Save");
-    private Button delete = new Button("Delete");
-
-    private Binder<Room> binder = new Binder<Room>(Room.class);
+    private final RoomsView roomsView;
+    private Room room;
 
     public RoomForm(RoomsView roomsView) {
-        location.setItems(RoomType.values());
-        HorizontalLayout buttons = new HorizontalLayout(save, delete);
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        add(name, capacity, location, price, buttons);
-        binder.bindInstanceFields(this);
         this.roomsView = roomsView;
-        save.addClickListener(event -> save());
+
+        HorizontalLayout buttons = new HorizontalLayout(create, update, delete);
+        add(name, location, capacity, price, cipher, buttons);
+
+        create.addClickListener(event -> create());
+        update.addClickListener(event -> update());
         delete.addClickListener(event -> delete());
     }
 
-    private void save() {
-        Room room = binder.getBean();
-        service.save(room);
-        roomsView.refresh();
-        setRoom(null);
+    public void setRoom(Room room) {
+        this.room = room;
+        if (room != null) {
+            name.setValue(room.getName() != null ? room.getName() : "");
+            location.setValue(room.getLocation() != null ? room.getLocation() : "");
+            capacity.setValue(String.valueOf(room.getCapacity()));
+            price.setValue(String.valueOf(room.getPrice()));
+            cipher.clear();
+        }
+    }
+
+    private void create() {
+        if (name.isEmpty() || location.isEmpty() || capacity.isEmpty() || price.isEmpty() || cipher.isEmpty()) {
+            Notification.show("All fields including cipher are required to create a room.");
+            return;
+        }
+        Room newRoom = new Room();
+        newRoom.setName(name.getValue());
+        newRoom.setLocation(location.getValue());
+        newRoom.setCapacity(Integer.parseInt(capacity.getValue()));
+        newRoom.setPrice(BigDecimal.valueOf(Double.parseDouble(price.getValue())));
+        newRoom.setCipher(cipher.getValue());
+        roomsView.createRoom(newRoom);
+    }
+
+    private void update() {
+        if (room != null) {
+            if (name.isEmpty() || location.isEmpty() || capacity.isEmpty() || price.isEmpty() || cipher.isEmpty()) {
+                Notification.show("All fields including cipher are required to update a room.");
+                return;
+            }
+            room.setName(name.getValue());
+            room.setLocation(location.getValue());
+            room.setCapacity(Integer.parseInt(capacity.getValue()));
+            room.setPrice(BigDecimal.valueOf(Double.parseDouble(price.getValue())));
+            room.setCipher(cipher.getValue());
+            roomsView.updateRoom(room);
+        }
     }
 
     private void delete() {
-        Room book = binder.getBean();
-        service.delete(book);
-        roomsView.refresh();
-        setRoom(null);
-    }
-
-    public void setRoom(Room room) {
-        binder.setBean(room);
-
-        if (room == null) {
-            setVisible(false);
+        if (!cipher.isEmpty()) {
+            roomsView.deleteRoomByCipher(cipher.getValue());
         } else {
-            setVisible(true);
-            name.focus();
+            Notification.show("Please enter cipher to delete.");
         }
     }
 
