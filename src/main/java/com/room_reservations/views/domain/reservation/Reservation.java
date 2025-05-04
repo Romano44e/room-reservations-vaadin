@@ -1,52 +1,103 @@
 package com.room_reservations.views.domain.reservation;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Reservation {
 
-    private String userName;
-    private String roomName;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private String status;
-    private String isPaid;
-    private String value;
+    private Long userId;
+    private Long roomId;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
+    private String reservationStatus;
+    private String paymentStatus;
+    private String currency;
+    private BigDecimal amount;
     private String code;
 
     public Reservation() {}
 
-    public Reservation(String userName, String roomName, LocalDateTime startTime, LocalDateTime endTime, String status, String isPaid, String value, String code) {
-        this.userName = userName;
-        this.roomName = roomName;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.status = status;
-        this.isPaid = isPaid;
-        this.value = value;
+    public Reservation(Long userId, Long roomId, LocalDateTime startDateTime, LocalDateTime endDateTime, String reservationStatus, String paymentStatus, String currency, BigDecimal amount, String code) {
+        this.userId = userId;
+        this.roomId = roomId;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.reservationStatus = reservationStatus;
+        this.paymentStatus = paymentStatus;
+        this.currency = currency;
+        this.amount = amount;
         this.code = code;
     }
 
-    public String getUserName() { return userName; }
-    public void setUserName(String userName) { this.userName = userName; }
+    public Long getUserId() {
+        return userId;
+    }
 
-    public String getRoomName() { return roomName; }
-    public void setRoomName(String roomName) { this.roomName = roomName; }
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
-    public LocalDateTime getStartTime() { return startTime; }
-    public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
+    public Long getRoomId() {
+        return roomId;
+    }
 
-    public LocalDateTime getEndTime() { return endTime; }
-    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
+    public void setRoomId(Long roomId) {
+        this.roomId = roomId;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
+    }
 
-    public String getIsPaid() { return isPaid; }
-    public void setIsPaid(String isPaid) { this.isPaid = isPaid; }
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
+    }
 
-    public String getValue() { return value; }
-    public void setValue(String value) { this.value = value; }
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
+    }
 
-    public String getCode() { return code; }
-    public void setCode(String code) { this.code = code; }
+    public void setEndDateTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
+    }
+
+    public String getReservationStatus() {
+        return reservationStatus;
+    }
+
+    public void setReservationStatus(String reservationStatus) {
+        this.reservationStatus = reservationStatus;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 }

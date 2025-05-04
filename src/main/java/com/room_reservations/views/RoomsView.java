@@ -1,9 +1,8 @@
 package com.room_reservations.views;
 
-import com.room_reservations.views.domain.room.Room;
-import com.room_reservations.views.domain.room.RoomForm;
-import com.room_reservations.views.domain.room.RoomRestClient;
+import com.room_reservations.views.domain.room.*;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
@@ -13,6 +12,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Route(value = "rooms", layout = MainLayout.class)
@@ -20,48 +20,72 @@ public class RoomsView extends VerticalLayout {
 
     private final RoomRestClient roomClient = new RoomRestClient();
     private final Grid<Room> grid = new Grid<>(Room.class);
-    private final TextField nameFilter = new TextField("Name");
     private final TextField locationFilter = new TextField("Location");
     private final TextField capacityFilter = new TextField("Capacity");
     private final TextField priceFilter = new TextField("Price");
+
+    private final TextField roomNameFilter = new TextField("Room Name");
+    private final DateTimePicker startDateTime = new DateTimePicker("Start DateTime");
+    private final DateTimePicker endDateTime = new DateTimePicker("End DateTime");
+    private final Button checkAvailability = new Button("Check Availability");
+
     private final RoomForm form = new RoomForm(this);
     private final Button addNewRoom = new Button("Add new room");
+    private final Button toggleFilters = new Button("Show/Hide Filters");
+
+    private final HorizontalLayout filters = new HorizontalLayout();
+    private final HorizontalLayout availabilityFilters = new HorizontalLayout();
 
     public RoomsView() {
         add(new H2("Rooms Page"));
 
-        grid.setColumns("name", "location", "capacity", "price");
+        grid.setColumns("name", "location", "capacity", "price", "cipher");
 
-        nameFilter.setPlaceholder("Name");
         locationFilter.setPlaceholder("Location");
         capacityFilter.setPlaceholder("Capacity");
         priceFilter.setPlaceholder("Price");
+        roomNameFilter.setPlaceholder("Room Name");
 
-        nameFilter.addValueChangeListener(e -> update());
         locationFilter.addValueChangeListener(e -> update());
         capacityFilter.addValueChangeListener(e -> update());
         priceFilter.addValueChangeListener(e -> update());
 
+        checkAvailability.addClickListener(e -> checkAvailability());
+
         addNewRoom.addClickListener(e -> {
             grid.asSingleSelect().clear();
             form.setRoom(new Room());
+            form.setVisible(true);
         });
 
-        HorizontalLayout filters = new HorizontalLayout(nameFilter, locationFilter, capacityFilter, priceFilter);
-        HorizontalLayout toolbar = new HorizontalLayout(filters, addNewRoom);
+        filters.add(locationFilter, capacityFilter, priceFilter);
+        filters.setVisible(false);
+
+        availabilityFilters.add(roomNameFilter, startDateTime, endDateTime, checkAvailability);
+        availabilityFilters.setVisible(false);
+
+        toggleFilters.addClickListener(e -> {
+            boolean visible = filters.isVisible();
+            filters.setVisible(!visible);
+            availabilityFilters.setVisible(!visible);
+        });
+
+        HorizontalLayout toolbar = new HorizontalLayout(toggleFilters, addNewRoom);
         toolbar.setWidthFull();
         toolbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
 
-        HorizontalLayout mainContent = new HorizontalLayout(grid, form);
-        mainContent.setSizeFull();
         grid.setSizeFull();
+        form.setVisible(false);
 
-        add(toolbar, mainContent);
+        add(toolbar, filters, availabilityFilters, grid, form);
         form.setRoom(null);
         setSizeFull();
         refresh();
 
-        grid.asSingleSelect().addValueChangeListener(event -> form.setRoom(grid.asSingleSelect().getValue()));
+        grid.asSingleSelect().addValueChangeListener(event -> {
+            form.setRoom(grid.asSingleSelect().getValue());
+            form.setVisible(true);
+        });
     }
 
     public void refresh() {
@@ -81,6 +105,26 @@ public class RoomsView extends VerticalLayout {
         }
     }
 
+    private void checkAvailability() {
+        LocalDateTime start = startDateTime.getValue();
+        LocalDateTime end = endDateTime.getValue();
+        String roomName = roomNameFilter.getValue();
+
+        if (start == null || end == null || roomName == null || roomName.isEmpty()) {
+            Notification.show("Please provide room name, start and end datetime.");
+            return;
+        }
+
+        if (start.isAfter(end)) {
+            Notification.show("Start datetime must be before end datetime.");
+            return;
+        }
+
+        RoomByDateTimeInputDto dto = new RoomByDateTimeInputDto(roomName, start, end);
+        String result = roomClient.isRoomAvailableViaPost(dto);
+        Notification.show(result);
+    }
+
     public void createRoom(Room room) {
         roomClient.createRoom(room);
         Notification.show("Room created.");
@@ -88,7 +132,7 @@ public class RoomsView extends VerticalLayout {
     }
 
     public void updateRoom(Room room) {
-        roomClient.updateRoom(room);
+        roomClient.updateRoomByCipher(room);
         Notification.show("Room updated.");
         refresh();
     }

@@ -50,8 +50,8 @@ public class Room {
         LocalDateTime requestedDateTime = LocalDateTime.of(date, time);
         return reservations.stream()
                 .noneMatch(reservation ->
-                        !requestedDateTime.isBefore(reservation.getStartTime()) &&
-                                !requestedDateTime.isAfter(reservation.getEndTime())
+                        !requestedDateTime.isBefore(reservation.getStartDateTime()) &&
+                                !requestedDateTime.isAfter(reservation.getEndDateTime())
                 );
     }
 

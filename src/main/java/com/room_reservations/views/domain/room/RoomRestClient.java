@@ -1,10 +1,7 @@
 package com.room_reservations.views.domain.room;
 
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -120,18 +117,17 @@ public class RoomRestClient {
         }
     }
 
-    public boolean isRoomAvailable(String name, LocalDateTime start, LocalDateTime end) {
+    public String isRoomAvailableViaPost(RoomByDateTimeInputDto dto) {
         try {
-            String url = UriComponentsBuilder.fromHttpUrl(BASE_URL)
-                    .queryParam("name", name)
-                    .queryParam("start", start.toString())
-                    .queryParam("end", end.toString())
-                    .toUriString();
-            ResponseEntity<Boolean> response = restTemplate.getForEntity(url, Boolean.class);
-            return response.getBody() != null && response.getBody();
+            String url = BASE_URL + "/availability";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<RoomByDateTimeInputDto> request = new HttpEntity<>(dto, headers);
+            ResponseEntity<RoomByDateTimeOutputDto> response = restTemplate.postForEntity(url, request, RoomByDateTimeOutputDto.class);
+            return response.getBody() != null ? response.getBody().getAvailibility() : "Empty response from server.";
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return "Error checking availability.";
         }
     }
 
