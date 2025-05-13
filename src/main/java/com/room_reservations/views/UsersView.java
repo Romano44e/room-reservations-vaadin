@@ -46,6 +46,7 @@ public class UsersView extends VerticalLayout {
         addNewUser.addClickListener(e -> {
             grid.asSingleSelect().clear();
             form.setUser(new User());
+            form.setVisible(true);
         });
 
         HorizontalLayout topFilters = new HorizontalLayout(nameFilter, emailFilter);
@@ -71,7 +72,13 @@ public class UsersView extends VerticalLayout {
         setSizeFull();
         refresh();
 
-        grid.asSingleSelect().addValueChangeListener(event -> form.setUser(grid.asSingleSelect().getValue()));
+        grid.asSingleSelect().addValueChangeListener(event -> {
+            User selectedUser = event.getValue();
+            if (selectedUser != null) {
+                form.setUser(selectedUser);
+                form.setVisible(true);
+            }
+        });
     }
 
     public void refresh() {

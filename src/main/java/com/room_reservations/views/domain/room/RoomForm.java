@@ -4,6 +4,7 @@ import com.room_reservations.views.RoomsView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
@@ -20,6 +21,7 @@ public class RoomForm extends FormLayout {
     private final Button create = new Button("Create");
     private final Button update = new Button("Update");
     private final Button delete = new Button("Delete");
+    private final Button closeButton = new Button("Hide Form");
 
     private final RoomsView roomsView;
     private Room room;
@@ -27,8 +29,15 @@ public class RoomForm extends FormLayout {
     public RoomForm(RoomsView roomsView) {
         this.roomsView = roomsView;
 
+        closeButton.addClickListener(e -> this.setVisible(false));
+
+        HorizontalLayout header = new HorizontalLayout(closeButton);
+        header.setWidthFull();
+        header.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+
         HorizontalLayout buttons = new HorizontalLayout(create, update, delete);
-        add(name, location, capacity, price, cipher, buttons);
+
+        add(header, name, location, capacity, price, cipher, buttons);
 
         create.addClickListener(event -> create());
         update.addClickListener(event -> update());

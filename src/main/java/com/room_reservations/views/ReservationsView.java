@@ -37,7 +37,7 @@ public class ReservationsView extends VerticalLayout {
     public ReservationsView() {
         add(new H2("Reservations Page"));
 
-        grid.setColumns("userId", "roomId", "startDateTime", "endDateTime", "reservationStatus", "paymentStatus", "currency", "amount", "code");
+        grid.setColumns("userId", "roomId", "startDateTime", "endDateTime", "reservationStatus", "paymentStatus", "currency", "amount");
 
         userFilter.setPlaceholder("User ID");
         roomFilter.setPlaceholder("Room ID");

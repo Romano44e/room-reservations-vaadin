@@ -4,6 +4,7 @@ import com.room_reservations.views.UsersView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -18,6 +19,7 @@ public class UserForm extends FormLayout {
     private final Button create = new Button("Create");
     private final Button update = new Button("Update");
     private final Button delete = new Button("Delete");
+    private final Button hideButton = new Button("Hide Form");
 
     private final UsersView usersView;
     private User user;
@@ -25,8 +27,15 @@ public class UserForm extends FormLayout {
     public UserForm(UsersView usersView) {
         this.usersView = usersView;
 
+        hideButton.addClickListener(e -> this.setVisible(false));
+
+        HorizontalLayout header = new HorizontalLayout(hideButton);
+        header.setWidthFull();
+        header.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+
         HorizontalLayout buttons = new HorizontalLayout(create, update, delete);
-        add(name, email, points, passwordField, buttons);
+
+        add(header, name, email, points, passwordField, buttons);
 
         create.addClickListener(event -> create());
         update.addClickListener(event -> update());

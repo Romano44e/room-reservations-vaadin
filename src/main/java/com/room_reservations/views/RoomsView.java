@@ -10,6 +10,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 
 import java.time.LocalDateTime;
@@ -27,7 +28,8 @@ public class RoomsView extends VerticalLayout {
     private final TextField roomNameFilter = new TextField("Room Name");
     private final DateTimePicker startDateTime = new DateTimePicker("Start DateTime");
     private final DateTimePicker endDateTime = new DateTimePicker("End DateTime");
-    private final Button checkAvailability = new Button("Check Availability");
+    private final Button checkAvailability = new Button("Show/Hide Availability");
+    private final Button runAvailabilityCheck = new Button("Check Availability");
 
     private final RoomForm form = new RoomForm(this);
     private final Button addNewRoom = new Button("Add new room");
@@ -46,11 +48,15 @@ public class RoomsView extends VerticalLayout {
         priceFilter.setPlaceholder("Price");
         roomNameFilter.setPlaceholder("Room Name");
 
+        locationFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        capacityFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        priceFilter.setValueChangeMode(ValueChangeMode.EAGER);
+
         locationFilter.addValueChangeListener(e -> update());
         capacityFilter.addValueChangeListener(e -> update());
         priceFilter.addValueChangeListener(e -> update());
 
-        checkAvailability.addClickListener(e -> checkAvailability());
+        runAvailabilityCheck.addClickListener(e -> checkAvailability());
 
         addNewRoom.addClickListener(e -> {
             grid.asSingleSelect().clear();
@@ -61,16 +67,13 @@ public class RoomsView extends VerticalLayout {
         filters.add(locationFilter, capacityFilter, priceFilter);
         filters.setVisible(false);
 
-        availabilityFilters.add(roomNameFilter, startDateTime, endDateTime, checkAvailability);
+        availabilityFilters.add(roomNameFilter, startDateTime, endDateTime, runAvailabilityCheck);
         availabilityFilters.setVisible(false);
 
-        toggleFilters.addClickListener(e -> {
-            boolean visible = filters.isVisible();
-            filters.setVisible(!visible);
-            availabilityFilters.setVisible(!visible);
-        });
+        toggleFilters.addClickListener(e -> filters.setVisible(!filters.isVisible()));
+        checkAvailability.addClickListener(e -> availabilityFilters.setVisible(!availabilityFilters.isVisible()));
 
-        HorizontalLayout toolbar = new HorizontalLayout(toggleFilters, addNewRoom);
+        HorizontalLayout toolbar = new HorizontalLayout(toggleFilters, checkAvailability, addNewRoom);
         toolbar.setWidthFull();
         toolbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
 
