@@ -56,8 +56,8 @@ public class RoomForm extends FormLayout {
     }
 
     private void create() {
-        if (name.isEmpty() || location.isEmpty() || capacity.isEmpty() || price.isEmpty() || cipher.isEmpty()) {
-            Notification.show("All fields including cipher are required to create a room.");
+        if (name.isEmpty() || location.isEmpty() || capacity.isEmpty() || price.isEmpty()) {
+            Notification.show("All fields excluding cipher are required to create a room.");
             return;
         }
         Room newRoom = new Room();

@@ -51,24 +51,30 @@ public class ReservationForm extends FormLayout {
 
     public void setReservation(Reservation reservation) {
         this.reservation = reservation;
+        boolean isCreateMode = (reservation != null && reservation.getCode() == null);
 
-        boolean isCreateMode = reservation == null;
+        userId.setVisible(isCreateMode);
+        roomId.setVisible(true);
+        startDateTime.setVisible(true);
+        endDateTime.setVisible(true);
+        currency.setVisible(true);
 
         reservationStatus.setVisible(!isCreateMode);
         paymentStatus.setVisible(!isCreateMode);
         amount.setVisible(!isCreateMode);
 
-        reservationStatus.setEnabled(!isCreateMode);
-        paymentStatus.setEnabled(!isCreateMode);
-        amount.setEnabled(!isCreateMode);
-
-        currency.setVisible(true);
-        currency.setEnabled(true);
-
-        code.setVisible(true);
-        code.setEnabled(true);
+        create.setVisible(isCreateMode);
+        update.setVisible(!isCreateMode);
+        delete.setVisible(!isCreateMode);
 
         if (isCreateMode) {
+            code.setVisible(false);
+        } else {
+            code.setVisible(true);
+            code.clear();
+        }
+
+        if (reservation == null) {
             userId.clear();
             roomId.clear();
             startDateTime.clear();
@@ -87,7 +93,6 @@ public class ReservationForm extends FormLayout {
             paymentStatus.setValue(reservation.getPaymentStatus() != null ? reservation.getPaymentStatus() : "");
             currency.setValue(reservation.getCurrency() != null ? reservation.getCurrency() : "");
             amount.setValue(reservation.getAmount() != null ? reservation.getAmount().toString() : "");
-            code.clear();
         }
     }
 
@@ -107,7 +112,6 @@ public class ReservationForm extends FormLayout {
         newReservation.setReservationStatus("PENDING");
         newReservation.setPaymentStatus("UNPAID");
         newReservation.setAmount(BigDecimal.ZERO);
-        // code NOT set here
 
         reservationsView.createReservation(newReservation);
     }

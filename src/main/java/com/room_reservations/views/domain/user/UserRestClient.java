@@ -52,16 +52,6 @@ public class UserRestClient {
         }
     }
 
-//    public void updateUser(User user) {
-//        try {
-//            HttpHeaders headers = new HttpHeaders();
-//            HttpEntity<User> entity = new HttpEntity<>(user, headers);
-//            restTemplate.exchange(BASE_URL, HttpMethod.PUT, entity, Void.class);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     public void updateUserByPassword(User user) {
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -72,14 +62,6 @@ public class UserRestClient {
         }
     }
 
-//    public void deleteUserByName(String name) {
-//        try {
-//            restTemplate.delete(BASE_URL + "/name/" + name);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     public void deleteUserByPassword(String password) {
         try {
             restTemplate.delete(BASE_URL + "/password/" + password);
@@ -87,6 +69,5 @@ public class UserRestClient {
             e.printStackTrace();
         }
     }
-
 
 }

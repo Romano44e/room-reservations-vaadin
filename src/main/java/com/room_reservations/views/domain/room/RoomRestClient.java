@@ -3,9 +3,7 @@ package com.room_reservations.views.domain.room;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
